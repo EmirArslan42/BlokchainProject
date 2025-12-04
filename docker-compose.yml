@@ -1,0 +1,49 @@
+version: "3.8"
+
+services:
+  ganache:
+    container_name: ganache_node
+    image: trufflesuite/ganache:v7.9.2
+    command: 
+      - --host
+      - "0.0.0.0"
+      - --port
+      - "8545"
+      - --chain.vmErrorsOnRPCResponse
+      - "true"
+      - --wallet.accounts=0xb6f188a65ea26f99ea6a5175b1d1bd0b8836eb574e6ebf96e60ca248be2b7e29,10000000000000000000000
+    ports:
+      - "8545:8545"
+    networks:
+      - certnet
+
+  hardhat:
+    container_name: hardhat_node
+    build:
+      context: ./dapp
+      dockerfile: Dockerfile
+    depends_on:
+      - ganache
+    networks:
+      - certnet
+
+  client:
+    container_name: blockchain_client
+    build:
+      context: ./client        # <-- EN ÖNEMLİ KISIM
+      dockerfile: Dockerfile   # <--
+    ports:
+      - "5173:5173"
+    depends_on:
+      - ganache
+      - hardhat
+    environment:
+      - VITE_RPC_URL=http://localhost:8545
+      - VITE_PRIVATE_KEY=0xb6f188a65ea26f99ea6a5175b1d1bd0b8836eb574e6ebf96e60ca248be2b7e29
+      - VITE_CONTRACT_ADDRESS=0xf7383145e937f5D3213ffd8078df33b2857bB1B8
+    networks:
+      - certnet
+
+networks:
+  certnet:
+    driver: bridge

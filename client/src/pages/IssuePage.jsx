@@ -1,0 +1,94 @@
+import { useState } from "react";
+import {
+  uuidToBytes32,
+  generateHolderHash,
+  issueCertificate
+} from "../api";
+import { v4 as uuidv4 } from "uuid";
+
+export default function IssuePage() {
+  const [ogrNo, setOgrNo] = useState("");
+  const [adSoyad, setAdSoyad] = useState("");
+  const [title, setTitle] = useState("");
+  const [issuer, setIssuer] = useState("");
+  const [expiresAt, setExpiresAt] = useState("0");
+  const [message, setMessage] = useState("Sertifika oluşturmak için bilgileri doldurun.");
+
+  async function handleIssue() {
+    try {
+      const id = uuidv4();
+      const idBytes32 = uuidToBytes32(id);
+      const salt = "SABIT_SALT_123";
+      const holderHash = generateHolderHash(ogrNo, adSoyad, salt);
+
+      const txHash = await issueCertificate(
+        idBytes32,
+        holderHash,
+        title,
+        issuer,
+        Number(expiresAt)
+      );
+
+      setMessage(
+        `Sertifika oluşturuldu!\nUUID: ${id}\nTx: ${txHash}\nSalt: ${salt}`
+      );
+    } catch (err) {
+      setMessage("Hata: " + err.message);
+    }
+  }
+
+  const inputStyle =
+    "w-full px-4 py-3 border rounded-lg mb-4 shadow-sm focus:ring-2 focus:ring-blue-400 outline-none transition";
+
+  return (
+    <div>
+      <h2 className="text-xl font-bold mb-4 text-gray-700">Sertifika Oluştur</h2>
+
+      <input
+        className={inputStyle}
+        placeholder="Öğrenci No"
+        value={ogrNo}
+        onChange={(e) => setOgrNo(e.target.value)}
+      />
+
+      <input
+        className={inputStyle}
+        placeholder="Ad Soyad"
+        value={adSoyad}
+        onChange={(e) => setAdSoyad(e.target.value)}
+      />
+
+      <input
+        className={inputStyle}
+        placeholder="Sertifika Başlığı"
+        value={title}
+        onChange={(e) => setTitle(e.target.value)}
+      />
+
+      <input
+        className={inputStyle}
+        placeholder="Kurum"
+        value={issuer}
+        onChange={(e) => setIssuer(e.target.value)}
+      />
+
+      <input
+        className={inputStyle}
+        placeholder="Bitiş Tarihi (0 = Süresiz)"
+        value={expiresAt}
+        onChange={(e) => setExpiresAt(e.target.value)}
+      />
+
+      <button
+        onClick={handleIssue}
+        className="w-full py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition shadow"
+      >
+        Sertifikayı Oluştur
+      </button>
+
+      <pre className="mt-6 bg-gray-100 p-4 rounded-lg whitespace-pre-wrap text-sm shadow-inner">
+        {message}
+      </pre>
+    </div>
+  );
+}

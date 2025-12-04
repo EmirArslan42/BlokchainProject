@@ -1,0 +1,16 @@
+{
+  "name": "dapp",
+  "version": "1.0.0",
+  "scripts": {
+    "compile": "hardhat compile",
+    "deploy": "hardhat run scripts/deploy.js --network ganache"
+  },
+  "dependencies": {
+    "dotenv": "^16.6.1",
+    "ethers": "^6.12.1"
+  },
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^4.0.0",
+    "hardhat": "^2.22.10"
+  }
+}
