@@ -193,4 +193,4 @@ Sertifika artık geçersiz olacaktır
 
 🎥 Demo Videosu 
 
-[Demo Videosunu İzle](./demo/Blockchain_Demo.mp4)
+[Demo Videosunu İzle](./demo/221229061_Emir_Arslan_Blockchain_Demo.mp4)
