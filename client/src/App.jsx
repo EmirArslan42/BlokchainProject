@@ -40,13 +40,13 @@ export default function App() {
           Sertifikayı İptal Et
         </button>
 
-        <button
+        {/* <button
           onClick={() => setPage("history")}
           className={`px-6 py-2 rounded-lg text-white font-semibold shadow transition
             ${page === "history" ? "bg-purple-600" : "bg-gray-500 hover:bg-gray-600"}`}
         >
           İşlem Geçmişi
-        </button>
+        </button> */}
       </div>
 
       <div className="w-full max-w-3xl bg-white p-8 rounded-2xl shadow-xl border border-gray-200">

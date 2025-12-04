@@ -15,9 +15,13 @@ export default function HistoryPage() {
       setLoading(true);
       setMessage("⏳ İşlemler yükleniyor...");
 
-      // Contract events'i dinle
-      const issuedEvents = await contract.queryFilter(contract.filters.CertificateIssued());
-      const revokedEvents = await contract.queryFilter(contract.filters.CertificateRevoked());
+      // CertificateIssued events
+      const issuedFilter = contract.filters.CertificateIssued();
+      const issuedEvents = await contract.queryFilter(issuedFilter);
+      
+      // CertificateRevoked events
+      const revokedFilter = contract.filters.CertificateRevoked();
+      const revokedEvents = await contract.queryFilter(revokedFilter);
 
       const allEvents = [
         ...issuedEvents.map((event) => ({
@@ -41,14 +45,15 @@ export default function HistoryPage() {
 
       if (allEvents.length === 0) {
         setMessage("📋 Henüz işlem yoktur.");
+        setEvents([]);
       } else {
         setEvents(allEvents);
         setMessage(`✔ Toplam ${allEvents.length} işlem bulundu.`);
       }
     } catch (err) {
+      console.error("History Error:", err);
       const errorMsg = err.reason || err.message || "Bilinmeyen hata";
       setMessage(`❌ Hata: ${errorMsg}`);
-      console.error(err);
     } finally {
       setLoading(false);
     }
@@ -86,25 +91,25 @@ export default function HistoryPage() {
                       {event.type === "Oluşturuldu" ? "✔" : "⚠"} {event.type}
                     </p>
                     <p className="text-xs text-gray-600 font-mono break-all">
-                      ID: {event.id.substring(0, 20)}...
+                      ID: {String(event.id).substring(0, 20)}...
                     </p>
                   </div>
                   <span className="text-xs text-gray-500">
                     {new Date(event.timestamp * 1000).toLocaleDateString("tr-TR")}
                   </span>
                 </div>
-                <a
-                  href={`#`}
-                  className="text-xs text-blue-500 hover:underline font-mono"
-                  title={event.txHash}
-                >
-                  TX: {event.txHash.substring(0, 10)}...
-                </a>
+                <div className="text-xs text-blue-500 font-mono mt-1">
+                  TX: {event.txHash.substring(0, 20)}...
+                </div>
               </div>
             ))}
           </div>
         )}
       </div>
+
+      <pre className="mt-6 bg-gray-100 p-4 rounded-lg whitespace-pre-wrap text-sm shadow-inner">
+        {message}
+      </pre>
     </div>
   );
 }
